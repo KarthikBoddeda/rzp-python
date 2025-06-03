@@ -99,11 +99,7 @@ payment_link = client.payment_links.create(
     amount=1000,
     currency="INR",
     description="Payment for policy no",
-    customer={
-        "contact": "+919000090000",
-        "email": "gaurav.kumar@example.com",
-        "name": "Gaurav Kumar",
-    },
+    customer={},
 )
 print(payment_link.customer)
 ```
