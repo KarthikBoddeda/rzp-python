@@ -77,6 +77,43 @@ asyncio.run(main())
 
 Functionality between the synchronous and asynchronous clients is otherwise identical.
 
+### With aiohttp
+
+By default, the async client uses `httpx` for HTTP requests. However, for improved concurrency performance you may also use `aiohttp` as the HTTP backend.
+
+You can enable this by installing `aiohttp`:
+
+```sh
+# install from the production repo
+pip install 'rzp[aiohttp] @ git+ssh://git@github.com/KarthikBoddeda/rzp-python.git'
+```
+
+Then you can enable it by instantiating the client with `http_client=DefaultAioHttpClient()`:
+
+```python
+import os
+import asyncio
+from rzp import DefaultAioHttpClient
+from rzp import AsyncRzp
+
+
+async def main() -> None:
+    async with AsyncRzp(
+        username=os.environ.get("RZP_USERNAME"),  # This is the default and can be omitted
+        password=os.environ.get("RZP_PASSWORD"),  # This is the default and can be omitted
+        http_client=DefaultAioHttpClient(),
+    ) as client:
+        payment_link = await client.payment_links.create(
+            amount=1000,
+            currency="INR",
+            description="Payment for policy no",
+        )
+        print(payment_link.id)
+
+
+asyncio.run(main())
+```
+
 ## Using types
 
 Nested request parameters are [TypedDicts](https://docs.python.org/3/library/typing.html#typing.TypedDict). Responses are [Pydantic models](https://docs.pydantic.dev) which also provide helper methods for things like:
