@@ -1,6 +1,6 @@
 # Rzp Python API library
 
-[![PyPI version](https://img.shields.io/pypi/v/rzp.svg)](https://pypi.org/project/rzp/)
+[![PyPI version](<https://img.shields.io/pypi/v/rzp.svg?label=pypi%20(stable)>)](https://pypi.org/project/rzp/)
 
 The Rzp Python library provides convenient access to the Rzp REST API from any Python 3.8+
 application. The library includes type definitions for all request params and response fields,
@@ -15,12 +15,12 @@ The full API of this library can be found in [api.md](api.md).
 ## Installation
 
 ```sh
-# install from this staging repo
-pip install git+ssh://git@github.com/stainless-sdks/rzp-python.git
+# install from the production repo
+pip install git+ssh://git@github.com/KarthikBoddeda/rzp-python.git
 ```
 
 > [!NOTE]
-> Once this package is [published to PyPI](https://app.stainless.com/docs/guides/publish), this will become: `pip install --pre rzp`
+> Once this package is [published to PyPI](https://www.stainless.com/docs/guides/publish), this will become: `pip install --pre rzp`
 
 ## Usage
 
@@ -77,6 +77,43 @@ asyncio.run(main())
 
 Functionality between the synchronous and asynchronous clients is otherwise identical.
 
+### With aiohttp
+
+By default, the async client uses `httpx` for HTTP requests. However, for improved concurrency performance you may also use `aiohttp` as the HTTP backend.
+
+You can enable this by installing `aiohttp`:
+
+```sh
+# install from the production repo
+pip install 'rzp[aiohttp] @ git+ssh://git@github.com/KarthikBoddeda/rzp-python.git'
+```
+
+Then you can enable it by instantiating the client with `http_client=DefaultAioHttpClient()`:
+
+```python
+import os
+import asyncio
+from rzp import DefaultAioHttpClient
+from rzp import AsyncRzp
+
+
+async def main() -> None:
+    async with AsyncRzp(
+        username=os.environ.get("RZP_USERNAME"),  # This is the default and can be omitted
+        password=os.environ.get("RZP_PASSWORD"),  # This is the default and can be omitted
+        http_client=DefaultAioHttpClient(),
+    ) as client:
+        payment_link = await client.payment_links.create(
+            amount=1000,
+            currency="INR",
+            description="Payment for policy no",
+        )
+        print(payment_link.id)
+
+
+asyncio.run(main())
+```
+
 ## Using types
 
 Nested request parameters are [TypedDicts](https://docs.python.org/3/library/typing.html#typing.TypedDict). Responses are [Pydantic models](https://docs.pydantic.dev) which also provide helper methods for things like:
@@ -99,11 +136,7 @@ payment_link = client.payment_links.create(
     amount=1000,
     currency="INR",
     description="Payment for policy no",
-    customer={
-        "contact": "+919000090000",
-        "email": "gaurav.kumar@example.com",
-        "name": "Gaurav Kumar",
-    },
+    customer={},
 )
 print(payment_link.customer)
 ```
@@ -181,7 +214,7 @@ client.with_options(max_retries=5).payment_links.create(
 ### Timeouts
 
 By default requests time out after 1 minute. You can configure this with a `timeout` option,
-which accepts a float or an [`httpx.Timeout`](https://www.python-httpx.org/advanced/#fine-tuning-the-configuration) object:
+which accepts a float or an [`httpx.Timeout`](https://www.python-httpx.org/advanced/timeouts/#fine-tuning-the-configuration) object:
 
 ```python
 from rzp import Rzp
@@ -254,9 +287,9 @@ payment_link = response.parse()  # get the object that `payment_links.create()` 
 print(payment_link.id)
 ```
 
-These methods return an [`APIResponse`](https://github.com/stainless-sdks/rzp-python/tree/main/src/rzp/_response.py) object.
+These methods return an [`APIResponse`](https://github.com/KarthikBoddeda/rzp-python/tree/main/src/rzp/_response.py) object.
 
-The async client returns an [`AsyncAPIResponse`](https://github.com/stainless-sdks/rzp-python/tree/main/src/rzp/_response.py) with the same structure, the only difference being `await`able methods for reading the response content.
+The async client returns an [`AsyncAPIResponse`](https://github.com/KarthikBoddeda/rzp-python/tree/main/src/rzp/_response.py) with the same structure, the only difference being `await`able methods for reading the response content.
 
 #### `.with_streaming_response`
 
@@ -364,7 +397,7 @@ This package generally follows [SemVer](https://semver.org/spec/v2.0.0.html) con
 
 We take backwards-compatibility seriously and work hard to ensure you can rely on a smooth upgrade experience.
 
-We are keen for your feedback; please open an [issue](https://www.github.com/stainless-sdks/rzp-python/issues) with questions, bugs, or suggestions.
+We are keen for your feedback; please open an [issue](https://www.github.com/KarthikBoddeda/rzp-python/issues) with questions, bugs, or suggestions.
 
 ### Determining the installed version
 
